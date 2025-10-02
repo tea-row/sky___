@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public int maxHealth = 3;
+    private int currentHealth;
+
     [SerializeField]
     private Rigidbody rb;
     [SerializeField]
@@ -13,15 +16,16 @@ public class Player : MonoBehaviour
     private int score;
     public int Score { get { return score; } set { score = value; } }
 
-    [SerializeField]
-    private int hp = 3;
-    public int HP { get { return hp; } set { hp = value; } }
-
     private bool isDead = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        Score = 0;
+
+        currentHealth = maxHealth;
+
+        UIManager.instance.UpdateUI(Score, currentHealth);
     }
 
     void Update()
@@ -31,7 +35,23 @@ public class Player : MonoBehaviour
         MoveLeftOrRight();
 
         score += (int)(Time.deltaTime * 10);
-        UIManager.instance.UpdateUI(score, hp);
+        UIManager.instance.UpdateUI(score, currentHealth);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (isDead) return;
+
+        currentHealth -= damage;
+
+        UIManager.instance.UpdateUI(Score, currentHealth);
+
+        Debug.Log("Player HP: " + currentHealth);
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
     }
 
     private void MoveLeftOrRight()
@@ -46,11 +66,7 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-            hp -= 1;
-            if (hp <= 0)
-            {
-                Die();
-            }
+            TakeDamage(1);
         }
     }
 
