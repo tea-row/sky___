@@ -17,8 +17,11 @@ public class Player : MonoBehaviour
     public int Score { get { return score; } set { score = value; } }
 
     [Header("Level Boundaries")]
-    public float minX = -10f;
-    public float maxX = 10f;
+    private float minX;
+    private float maxX;
+
+    [Header("Dependencies")]
+    public LevelGenerator levelGenerator;
 
     private bool isDead = false;
 
@@ -29,10 +32,24 @@ public class Player : MonoBehaviour
 
         currentHealth = maxHealth;
 
-        UIManager.instance.UpdateUI(Score, currentHealth);
+        if (levelGenerator != null)
+        {
+            float halfLevelWidth = (levelGenerator.numberOfLanes - 1) * 0.5f * levelGenerator.laneWidth;
+            minX = -halfLevelWidth;
+            maxX = halfLevelWidth;
+        }
+        else
+        {
+            Debug.LogError("LevelGenerator is not assigned in the Player script!", this.gameObject);
+
+            minX = -10f;
+            maxX = 10f;
+        }
+    
+    UIManager.instance.UpdateUI(Score, currentHealth);
     }
 
-    void Update()
+void Update()
     {
         if (isDead) return;
 
@@ -49,11 +66,6 @@ public class Player : MonoBehaviour
         rb.AddForce(xInput * Vector3.right * forcePower * Time.fixedDeltaTime, ForceMode.VelocityChange);
        
         Vector3 currentPosition = rb.position;
-
-        if ((currentPosition.x <= minX && rb.velocity.x < 0) || (currentPosition.x >= maxX && rb.velocity.x > 0))
-        {
-            rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
-        }
 
         currentPosition.x = Mathf.Clamp(currentPosition.x, minX, maxX);
         rb.position = currentPosition;
