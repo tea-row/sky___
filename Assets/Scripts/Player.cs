@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public float moveSpeed = 7.0f;
+    private float moveInput = 0f;
+
     public int maxHealth = 3;
     private int currentHealth;
 
@@ -57,6 +60,11 @@ void Update()
 
         score += (int)(Time.deltaTime * 10);
         UIManager.instance.UpdateUI(score, currentHealth);
+
+        if (moveInput != 0)
+        {
+            transform.Translate(new Vector3(moveInput, 0, 0) * moveSpeed * Time.deltaTime);
+        }
     }
 
     void FixedUpdate()
@@ -114,6 +122,22 @@ void Update()
             Destroy(collision.gameObject);
         }
     }
+
+    public void OnPointerDownLeft()
+    {
+        moveInput = -1f;
+    }
+
+    public void OnPointerDownRight()
+    {
+        moveInput = 1f;
+    }
+
+    public void OnPointerUp()
+    {
+        moveInput = 0f;
+    }
+
 
     void Die()
     {
