@@ -14,9 +14,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMP_Text notificationText;
 
-    [SerializeField]
-    private Color gameOverColor = new Color(0.8f, 0.2f, 0.2f, 0.7f);
-
     public static UIManager instance;
 
     void Awake()
