@@ -80,7 +80,17 @@ public class Player : MonoBehaviour
         xInput = Input.GetAxis("Horizontal");
         rb.AddForce(xInput * Vector3.right * forcePower);
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Collectible"))
+        {
+            score += 100;
 
+            Debug.Log("Collected a coin! Score: " + score);
+
+            Destroy(other.gameObject);
+        }
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (isDead) return;
