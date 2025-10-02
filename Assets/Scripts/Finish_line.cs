@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class Finish_line : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        
-    }
+        if (other.CompareTag("Player"))
+        {
+            Player player = other.GetComponent<Player>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            if (player != null)
+            {
+                player.Score += 100;
+                UIManager.instance.ShowNotification("You win!");
+            }
+        }
     }
 }
