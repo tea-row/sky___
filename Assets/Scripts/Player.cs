@@ -16,6 +16,10 @@ public class Player : MonoBehaviour
     private int score;
     public int Score { get { return score; } set { score = value; } }
 
+    [Header("Level Boundaries")]
+    public float minX = -10f;
+    public float maxX = 10f;
+
     private bool isDead = false;
 
     void Start()
@@ -32,10 +36,27 @@ public class Player : MonoBehaviour
     {
         if (isDead) return;
 
-        MoveLeftOrRight();
+        xInput = Input.GetAxis("Horizontal");
 
         score += (int)(Time.deltaTime * 10);
         UIManager.instance.UpdateUI(score, currentHealth);
+    }
+
+    void FixedUpdate()
+    {
+        if (isDead) return;
+
+        rb.AddForce(xInput * Vector3.right * forcePower * Time.fixedDeltaTime, ForceMode.VelocityChange);
+       
+        Vector3 currentPosition = rb.position;
+
+        if ((currentPosition.x <= minX && rb.velocity.x < 0) || (currentPosition.x >= maxX && rb.velocity.x > 0))
+        {
+            rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
+        }
+
+        currentPosition.x = Mathf.Clamp(currentPosition.x, minX, maxX);
+        rb.position = currentPosition;
     }
 
     public void TakeDamage(int damage)
@@ -67,6 +88,8 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Obstacle"))
         {
             TakeDamage(1);
+
+            Destroy(collision.gameObject);
         }
     }
 
